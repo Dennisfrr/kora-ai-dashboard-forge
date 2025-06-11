@@ -1,9 +1,18 @@
 import { Card } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
-import { MessageSquare, Phone, Mail, TrendingUp, AlertTriangle, CheckCircle } from "lucide-react";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
+import { MessageSquare, Phone, Mail, TrendingUp, AlertTriangle, CheckCircle, Search, MoreHorizontal, Eye, Edit, Plus } from "lucide-react";
+import { useState } from "react";
 
 const LeadsTable = () => {
+  const [searchTerm, setSearchTerm] = useState("");
+  const [stageFilter, setStageFilter] = useState("all");
+  const [healthFilter, setHealthFilter] = useState("all");
+
   const leads = [
     {
       id: 1,
@@ -62,6 +71,15 @@ const LeadsTable = () => {
     }
   ];
 
+  const filteredLeads = leads.filter(lead => {
+    const matchesSearch = lead.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                         lead.company.toLowerCase().includes(searchTerm.toLowerCase());
+    const matchesStage = stageFilter === "all" || lead.stage === stageFilter;
+    const matchesHealth = healthFilter === "all" || lead.health === healthFilter;
+    
+    return matchesSearch && matchesStage && matchesHealth;
+  });
+
   const getHealthColor = (health: string) => {
     switch (health) {
       case "positive": return "text-green-500";
@@ -94,6 +112,10 @@ const LeadsTable = () => {
       <div className="flex items-center justify-between mb-6">
         <h3 className="text-lg font-semibold text-foreground">Leads Ativos</h3>
         <div className="flex items-center space-x-2">
+          <Button className="bg-primary text-primary-foreground hover:bg-primary/90">
+            <Plus className="h-4 w-4 mr-2" />
+            Adicionar Lead
+          </Button>
           <Badge variant="outline" className="text-green-500 border-green-500">
             23 Positivos
           </Badge>
@@ -104,6 +126,43 @@ const LeadsTable = () => {
             9 Atenção
           </Badge>
         </div>
+      </div>
+
+      {/* Filtros e Busca */}
+      <div className="flex flex-col sm:flex-row gap-4 mb-6">
+        <div className="relative flex-1">
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+          <Input
+            placeholder="Buscar leads por nome ou empresa..."
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+            className="pl-10"
+          />
+        </div>
+        <Select value={stageFilter} onValueChange={setStageFilter}>
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Filtrar por estágio" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todos os estágios</SelectItem>
+            <SelectItem value="Primeiro Contato">Primeiro Contato</SelectItem>
+            <SelectItem value="Descoberta">Descoberta</SelectItem>
+            <SelectItem value="Qualificação">Qualificação</SelectItem>
+            <SelectItem value="Proposta">Proposta</SelectItem>
+            <SelectItem value="Negociação">Negociação</SelectItem>
+          </SelectContent>
+        </Select>
+        <Select value={healthFilter} onValueChange={setHealthFilter}>
+          <SelectTrigger className="w-full sm:w-[180px]">
+            <SelectValue placeholder="Filtrar por saúde" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">Todas as saúdes</SelectItem>
+            <SelectItem value="positive">Positivo</SelectItem>
+            <SelectItem value="neutral">Neutro</SelectItem>
+            <SelectItem value="negative">Atenção</SelectItem>
+          </SelectContent>
+        </Select>
       </div>
       
       <div className="overflow-x-auto">
@@ -116,10 +175,11 @@ const LeadsTable = () => {
               <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Última Interação</th>
               <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Valor</th>
               <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Estágio</th>
+              <th className="text-left py-3 px-2 text-sm font-medium text-muted-foreground">Ações</th>
             </tr>
           </thead>
           <tbody>
-            {leads.map((lead) => {
+            {filteredLeads.map((lead) => {
               const HealthIcon = getHealthIcon(lead.health);
               const InteractionIcon = getInteractionIcon(lead.interactionType);
               
@@ -133,7 +193,9 @@ const LeadsTable = () => {
                         </AvatarFallback>
                       </Avatar>
                       <div>
-                        <p className="font-medium text-foreground text-sm">{lead.name}</p>
+                        <button className="font-medium text-foreground text-sm hover:text-primary transition-colors text-left">
+                          {lead.name}
+                        </button>
                         <p className="text-xs text-muted-foreground">{lead.company}</p>
                       </div>
                     </div>
@@ -164,6 +226,29 @@ const LeadsTable = () => {
                     <Badge variant="secondary" className="text-xs">
                       {lead.stage}
                     </Badge>
+                  </td>
+                  <td className="py-4 px-2">
+                    <DropdownMenu>
+                      <DropdownMenuTrigger asChild>
+                        <Button variant="ghost" className="h-8 w-8 p-0">
+                          <MoreHorizontal className="h-4 w-4" />
+                        </Button>
+                      </DropdownMenuTrigger>
+                      <DropdownMenuContent align="end" className="bg-popover border-border">
+                        <DropdownMenuItem className="text-foreground hover:bg-accent">
+                          <Eye className="mr-2 h-4 w-4" />
+                          Ver Detalhes
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-foreground hover:bg-accent">
+                          <Edit className="mr-2 h-4 w-4" />
+                          Editar Lead
+                        </DropdownMenuItem>
+                        <DropdownMenuItem className="text-foreground hover:bg-accent">
+                          <Plus className="mr-2 h-4 w-4" />
+                          Adicionar Tarefa
+                        </DropdownMenuItem>
+                      </DropdownMenuContent>
+                    </DropdownMenu>
                   </td>
                 </tr>
               );
