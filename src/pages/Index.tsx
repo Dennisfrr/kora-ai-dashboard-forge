@@ -1,11 +1,24 @@
-// Update this page (the content is just a fallback if you fail to update the page)
+import KoraHeader from "@/components/KoraHeader";
+import AIInsightsFeed from "@/components/AIInsightsFeed";
+import ConversationFunnel from "@/components/ConversationFunnel";
+import LeadsTable from "@/components/LeadsTable";
 
 const Index = () => {
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background">
-      <div className="text-center">
-        <h1 className="text-4xl font-bold mb-4">Welcome to Your Blank App</h1>
-        <p className="text-xl text-muted-foreground">Start building your amazing project here!</p>
+    <div className="min-h-screen bg-background dark">
+      <KoraHeader />
+      
+      <div className="p-6">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+          <div className="lg:col-span-2">
+            <ConversationFunnel />
+          </div>
+          <div>
+            <AIInsightsFeed />
+          </div>
+        </div>
+        
+        <LeadsTable />
       </div>
     </div>
   );

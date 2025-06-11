@@ -61,6 +61,14 @@ export default {
 					'accent-foreground': 'hsl(var(--sidebar-accent-foreground))',
 					border: 'hsl(var(--sidebar-border))',
 					ring: 'hsl(var(--sidebar-ring))'
+				},
+				kora: {
+					red: 'hsl(var(--kora-red))',
+					'red-foreground': 'hsl(var(--kora-red-foreground))',
+					dark: 'hsl(var(--kora-dark))',
+					card: 'hsl(var(--kora-card))',
+					border: 'hsl(var(--kora-border))',
+					muted: 'hsl(var(--kora-muted))'
 				}
 			},
 			borderRadius: {
